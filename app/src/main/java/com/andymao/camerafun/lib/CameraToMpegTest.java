@@ -202,7 +202,7 @@ public class CameraToMpegTest {
                     Log.d(TAG, "present: " +
                             ((st.getTimestamp() - startWhen) / 1000000.0) + "ms");
                 }
-//                mInputSurface.setPresentationTime(st.getTimestamp());
+                mInputSurface.setPresentationTime(st.getTimestamp());
 
                 // Submit it to the encoder.  The eglSwapBuffers call will block if the input
                 // is full, which would be bad if it stayed full until we dequeued an output
@@ -217,9 +217,9 @@ public class CameraToMpegTest {
             drainEncoder(true);
         } finally {
             // release everything we grabbed
-//            releaseCamera();
-//            releaseEncoder();
-//            releaseSurfaceTexture();
+            releaseCamera();
+            releaseEncoder();
+            releaseSurfaceTexture();
         }
     }
 
