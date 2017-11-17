@@ -1,4 +1,4 @@
-package com.andymao.camerafun;
+package com.andymao.camerafun.lib;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;

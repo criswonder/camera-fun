@@ -1,4 +1,4 @@
-package com.andymao.camerafun;
+package com.andymao.camerafun.lib;
 
 import android.app.Activity;
 import android.app.Application;
@@ -6,6 +6,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -30,6 +31,10 @@ public class CameraWrapper {
     private ViewGroup mPreviewParent;
     private Handler mHandler;
     private boolean mUserSurfaceView;
+
+    public Camera getCamera() {
+        return mCamera;
+    }
 
     static class SingleInstance extends SingleInstanceTemplate<CameraWrapper> {
 
@@ -76,7 +81,7 @@ public class CameraWrapper {
 //
 //                }
 
-                getInstance().openCamera();
+                openCameraAndStartPreview();
             }
 
             @Override
@@ -120,20 +125,48 @@ public class CameraWrapper {
             @Override
             public void onDisplayAvailable(CameraDisplay.CameraDisplayParams displayParams) {
                 Log.e(TAG, "onDisplayAvailable");
-                openCamera();
+                openCameraAndStartPreview();
             }
         });
     }
 
-    public void initCameraConfig(Camera.Parameters parameters) {
-        mParameters = parameters;
+    private void openCameraAndStartPreview() {
+        getInstance().openCamera();
+        Camera.Parameters cameraParams = getInstance().getCameraParameter();
+        if (cameraParams != null) {
+            int rotation = 180;
+            Log.e(TAG, "original:" + cameraParams.flatten());
+            cameraParams.setRotation(rotation);
+            cameraParams.setPreviewSize(1440, 1080);
+            Log.e(TAG, "change:" + cameraParams.flatten());
+            getInstance().updateCameraConfig(cameraParams);
+        }
+
+        getInstance().startPreview();
+    }
+
+    public void updateCameraConfig(Camera.Parameters inputParameter) {
+        mParameters = inputParameter;
+        if (mCamera != null) {
+            mCamera.setParameters(inputParameter);
+        }
+    }
+
+    public @Nullable
+    Camera.Parameters getCameraParameter() {
+        if (mCamera != null) {
+            return mCamera.getParameters();
+        }
+        return null;
     }
 
     public int openCamera() {
         Log.e(TAG, "openCamera");
-        mCamera = Camera.open();
-        mCamera.getParameters();
+        mCamera = Camera.open(1);
+        return 0;
+    }
 
+    public void startPreview() {
         if (mUserSurfaceView) {
             try {
                 SurfaceHolder surfaceHolder = CameraDisplay.getInstance().getSurfaceHolder();
@@ -153,15 +186,37 @@ public class CameraWrapper {
                 if (surfaceTexture == null) {
                     Log.e(TAG, "openCamera failed surfaceTexture == null");
                 }
+                mCamera.setDisplayOrientation(90);
                 mCamera.setPreviewTexture(surfaceTexture);
                 mCamera.startPreview();
+
+//                mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+//                    @Override
+//                    public void onPreviewFrame(byte[] data, Camera camera) {
+//                        Log.e(TAG,"onPreviewFrame");
+//                    }
+//                });
+
+
+//                mCamera.setPreviewCallbackWithBuffer(new Camera.PreviewCallback() {
+//                    @Override
+//                    public void onPreviewFrame(byte[] data, Camera camera) {
+//
+//                    }
+//                });
+//
+//                mCamera.addCallbackBuffer(null);
+//
+//                mCamera.setFaceDetectionListener(new Camera.FaceDetectionListener() {
+//                    @Override
+//                    public void onFaceDetection(Camera.Face[] faces, Camera camera) {
+//
+//                    }
+//                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-
-        return 0;
     }
 
     public void releaseCamera() {

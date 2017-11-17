@@ -7,7 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.ViewGroup;
+
+import com.andymao.camerafun.lib.CameraToMpegTest;
+import com.andymao.camerafun.lib.CameraWrapper;
+import com.andymao.camerafun.lib.Log;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
@@ -23,6 +28,20 @@ public class MainActivity extends AppCompatActivity {
         } else {
             CameraWrapper.getInstance().init(this, (ViewGroup) findViewById(R.id.rootView));
         }
+
+
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraToMpegTest cameraToMpegTest = new CameraToMpegTest();
+                cameraToMpegTest.mCamera = CameraWrapper.getInstance().getCamera();
+                try {
+                    cameraToMpegTest.testEncodeCameraToMp4();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
