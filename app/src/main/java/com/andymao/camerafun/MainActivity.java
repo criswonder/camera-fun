@@ -33,13 +33,22 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CameraToMpegTest cameraToMpegTest = new CameraToMpegTest();
-                cameraToMpegTest.mCamera = CameraWrapper.getInstance().getCamera();
-                try {
-                    cameraToMpegTest.testEncodeCameraToMp4();
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
+
+
+                Thread newThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        CameraToMpegTest cameraToMpegTest = new CameraToMpegTest();
+//                        cameraToMpegTest.mCamera = CameraWrapper.getInstance().getCamera();
+                        try {
+                            cameraToMpegTest.testEncodeCameraToMp4();
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                    }
+                });
+
+                newThread.start();
             }
         });
     }

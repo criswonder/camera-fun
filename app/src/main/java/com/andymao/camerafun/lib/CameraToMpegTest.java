@@ -76,7 +76,7 @@ public class CameraToMpegTest {
     private static final String MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
     private static final int FRAME_RATE = 30;               // 30fps
     private static final int IFRAME_INTERVAL = 5;           // 5 seconds between I-frames
-    private static final long DURATION_SEC = 8;             // 8 seconds of video
+    private static final long DURATION_SEC = 5;             // 8 seconds of video
 
     // Fragment shader that swaps color channels around.
     private static final String SWAPPED_FRAGMENT_SHADER =
@@ -140,7 +140,7 @@ public class CameraToMpegTest {
             CameraToMpegWrapper wrapper = new CameraToMpegWrapper(obj);
             Thread th = new Thread(wrapper, "codec test");
             th.start();
-//            th.join();
+            th.join();
             if (wrapper.mThrowable != null) {
                 throw wrapper.mThrowable;
             }
@@ -160,10 +160,10 @@ public class CameraToMpegTest {
         try {
             prepareCamera(encWidth, encHeight);
             prepareEncoder(encWidth, encHeight, encBitRate);
-//            mInputSurface.makeCurrent();
+            mInputSurface.makeCurrent();
             prepareSurfaceTexture();
 
-//            mCamera.startPreview();
+            mCamera.startPreview();
 
             long startWhen = System.nanoTime();
             long desiredEnd = startWhen + DURATION_SEC * 1000000000L;
@@ -193,8 +193,8 @@ public class CameraToMpegTest {
                 // time to render it on screen.  The texture can be shared between contexts by
                 // passing the GLSurfaceView's EGLContext as eglCreateContext()'s share_context
                 // argument.
-//                mStManager.awaitNewImage();
-//                mStManager.drawImage();
+                mStManager.awaitNewImage();
+                mStManager.drawImage();
 
                 // Set the presentation time stamp from the SurfaceTexture's time stamp.  This
                 // will be used by MediaMuxer to set the PTS in the video.
@@ -210,7 +210,7 @@ public class CameraToMpegTest {
                 // the encoder before supplying additional input, the system guarantees that we
                 // can supply another frame without blocking.
                 if (VERBOSE) Log.d(TAG, "sending frame to encoder");
-//                mInputSurface.swapBuffers();
+                mInputSurface.swapBuffers();
             }
 
             // send end-of-stream to encoder, and drain remaining output
@@ -229,33 +229,33 @@ public class CameraToMpegTest {
      * Opens a Camera and sets parameters.  Does not start preview.
      */
     private void prepareCamera(int encWidth, int encHeight) {
-//        if (mCamera != null) {
-//            throw new RuntimeException("camera already initialized");
-//        }
-//
-//        Camera.CameraInfo info = new Camera.CameraInfo();
-//
-//        // Try to find a front-facing camera (e.g. for videoconferencing).
-//        int numCameras = Camera.getNumberOfCameras();
-//        for (int i = 0; i < numCameras; i++) {
-//            Camera.getCameraInfo(i, info);
-//            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-//                try {
-//                    releaseCamera();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                mCamera = Camera.open(i);
-//                break;
-//            }
-//        }
-//        if (mCamera == null) {
-//            Log.d(TAG, "No front-facing camera found; opening default");
-//            mCamera = Camera.open();    // opens first back-facing camera
-//        }
-//        if (mCamera == null) {
-//            throw new RuntimeException("Unable to open camera");
-//        }
+        if (mCamera != null) {
+            throw new RuntimeException("camera already initialized");
+        }
+
+        Camera.CameraInfo info = new Camera.CameraInfo();
+
+        // Try to find a front-facing camera (e.g. for videoconferencing).
+        int numCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numCameras; i++) {
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                try {
+                    releaseCamera();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mCamera = Camera.open(i);
+                break;
+            }
+        }
+        if (mCamera == null) {
+            Log.d(TAG, "No front-facing camera found; opening default");
+            mCamera = Camera.open();    // opens first back-facing camera
+        }
+        if (mCamera == null) {
+            throw new RuntimeException("Unable to open camera");
+        }
 
         Camera.Parameters parms = mCamera.getParameters();
 
@@ -359,11 +359,11 @@ public class CameraToMpegTest {
     private void prepareSurfaceTexture() {
         mStManager = new SurfaceTextureManager();
         SurfaceTexture st = mStManager.getSurfaceTexture();
-//        try {
-//            mCamera.setPreviewTexture(st);
-//        } catch (IOException ioe) {
-//            throw new RuntimeException("setPreviewTexture failed", ioe);
-//        }
+        try {
+            mCamera.setPreviewTexture(st);
+        } catch (IOException ioe) {
+            throw new RuntimeException("setPreviewTexture failed", ioe);
+        }
     }
 
     /**
@@ -404,11 +404,11 @@ public class CameraToMpegTest {
     private void prepareEncoder(int width, int height, int bitRate) {
         mBufferInfo = new MediaCodec.BufferInfo();
 
-        MediaCodecInfo codecInfo = selectCodec(MIME_TYPE);
-
-        if (VERBOSE) Log.d(TAG, "found codec: " + codecInfo.getName());
-        int colorFormat = selectColorFormat(codecInfo, MIME_TYPE);
-        if (VERBOSE) Log.d(TAG, "found colorFormat: " + colorFormat);
+//        MediaCodecInfo codecInfo = selectCodec(MIME_TYPE);
+//
+//        if (VERBOSE) Log.d(TAG, "found codec: " + codecInfo.getName());
+//        int colorFormat = selectColorFormat(codecInfo, MIME_TYPE);
+//        if (VERBOSE) Log.d(TAG, "found colorFormat: " + colorFormat);
 
 
         MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, width, height);
@@ -717,7 +717,7 @@ public class CameraToMpegTest {
     private static class SurfaceTextureManager
             implements SurfaceTexture.OnFrameAvailableListener {
         private SurfaceTexture mSurfaceTexture;
-//        private CameraToMpegTest.STextureRender mTextureRender;
+        private CameraToMpegTest.STextureRender mTextureRender;
 
         private Object mFrameSyncObject = new Object();     // guards mFrameAvailable
         private boolean mFrameAvailable;
@@ -726,13 +726,13 @@ public class CameraToMpegTest {
          * Creates instances of TextureRender and SurfaceTexture.
          */
         public SurfaceTextureManager() {
-//            mTextureRender = new CameraToMpegTest.STextureRender();
-//            mTextureRender.surfaceCreated();
+            mTextureRender = new CameraToMpegTest.STextureRender();
+            mTextureRender.surfaceCreated();
 
-//            if (VERBOSE) Log.d(TAG, "textureID=" + mTextureRender.getTextureId());
-//            mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
+            if (VERBOSE) Log.d(TAG, "textureID=" + mTextureRender.getTextureId());
+            mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
 
-            mSurfaceTexture = CameraDisplay.getInstance().getSurfaceTexture();
+//            mSurfaceTexture = CameraDisplay.getInstance().getSurfaceTexture();
 
             // This doesn't work if this object is created on the thread that CTS started for
             // these test cases.
@@ -753,7 +753,7 @@ public class CameraToMpegTest {
             //  W BufferQueue: [unnamed-3997-2] cancelBuffer: BufferQueue has been abandoned!
             //mSurfaceTexture.release();
 
-//            mTextureRender = null;
+            mTextureRender = null;
             mSurfaceTexture = null;
         }
 
@@ -768,7 +768,7 @@ public class CameraToMpegTest {
          * Replaces the fragment shader.
          */
         public void changeFragmentShader(String fragmentShader) {
-//            mTextureRender.changeFragmentShader(fragmentShader);
+            mTextureRender.changeFragmentShader(fragmentShader);
         }
 
         /**
@@ -798,7 +798,7 @@ public class CameraToMpegTest {
             }
 
             // Latch the data.
-//            mTextureRender.checkGlError("before updateTexImage");
+            mTextureRender.checkGlError("before updateTexImage");
             mSurfaceTexture.updateTexImage();
         }
 
@@ -806,7 +806,7 @@ public class CameraToMpegTest {
          * Draws the data from SurfaceTexture onto the current EGL surface.
          */
         public void drawImage() {
-//            mTextureRender.drawFrame(mSurfaceTexture);
+            mTextureRender.drawFrame(mSurfaceTexture);
         }
 
         @Override

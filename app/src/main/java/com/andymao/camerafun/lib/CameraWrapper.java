@@ -142,7 +142,7 @@ public class CameraWrapper {
             getInstance().updateCameraConfig(cameraParams);
         }
 
-        getInstance().startPreview();
+//        getInstance().startPreview();
     }
 
     public void updateCameraConfig(Camera.Parameters inputParameter) {
