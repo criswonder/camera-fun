@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.andymao.camerafun.lib.CameraToMpegTest;
 import com.andymao.camerafun.lib.CameraWrapper;
+import com.andymao.camerafun.lib.EncodeAndMuxTest;
 import com.andymao.camerafun.lib.Log;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,6 +43,27 @@ public class MainActivity extends AppCompatActivity {
 //                        cameraToMpegTest.mCamera = CameraWrapper.getInstance().getCamera();
                         try {
                             cameraToMpegTest.testEncodeCameraToMp4();
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                    }
+                });
+
+                newThread.start();
+            }
+        });
+
+        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Thread newThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        EncodeAndMuxTest test = new EncodeAndMuxTest();
+                        try {
+                            test.testEncodeVideoToMp4();
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
                         }

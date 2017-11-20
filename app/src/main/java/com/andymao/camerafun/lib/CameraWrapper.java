@@ -31,6 +31,7 @@ public class CameraWrapper {
     private ViewGroup mPreviewParent;
     private Handler mHandler;
     private boolean mUserSurfaceView;
+    private boolean mUseGLSurfaceView;
 
     public Camera getCamera() {
         return mCamera;
@@ -189,6 +190,13 @@ public class CameraWrapper {
                 mCamera.setDisplayOrientation(90);
                 mCamera.setPreviewTexture(surfaceTexture);
                 mCamera.startPreview();
+
+                surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
+                    @Override
+                    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                        Log.e(TAG, "onFrameAvailable");
+                    }
+                });
 
 //                mCamera.setPreviewCallback(new Camera.PreviewCallback() {
 //                    @Override

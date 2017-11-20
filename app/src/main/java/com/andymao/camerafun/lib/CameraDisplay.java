@@ -90,8 +90,8 @@ public class CameraDisplay {
         });
     }
 
-    public void init(TextureView surfaceView) {
-        surfaceView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+    public void init(TextureView textureView) {
+        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
                 Log.d(TAG, "onSurfaceTextureAvailable");
