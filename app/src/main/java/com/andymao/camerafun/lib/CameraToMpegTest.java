@@ -67,6 +67,7 @@ import java.nio.FloatBuffer;
  */
 public class CameraToMpegTest {
     private static final String TAG = "CameraToMpegTest";
+    private static final String TAG_SEQUENCE = "andymao@";
     private static final boolean VERBOSE = true;           // lots of logging
 
     // where to put the output file (note: /sdcard requires WRITE_EXTERNAL_STORAGE permission)
@@ -171,7 +172,7 @@ public class CameraToMpegTest {
             int frameCount = 0;
 
             while (System.nanoTime() < desiredEnd) {
-                Log.e(TAG,"encodeCameraToMpeg in while");
+                Log.e(TAG, "encodeCameraToMpeg in while, thread=" + Thread.currentThread().getName());
                 // Feed any pending encoder output into the muxer.
                 drainEncoder(false);
 
@@ -210,6 +211,7 @@ public class CameraToMpegTest {
                 // the encoder before supplying additional input, the system guarantees that we
                 // can supply another frame without blocking.
                 if (VERBOSE) Log.d(TAG, "sending frame to encoder");
+                Log.e(TAG_SEQUENCE, "sending frame to encoder");
                 mInputSurface.swapBuffers();
             }
 
@@ -776,7 +778,7 @@ public class CameraToMpegTest {
          * the OutputSurface object.
          */
         public void awaitNewImage() {
-            Log.e(TAG,"awaitNewImage");
+            Log.e(TAG_SEQUENCE, "awaitNewImage begin, thread=" + Thread.currentThread().getName());
             final int TIMEOUT_MS = 2500;
 
             synchronized (mFrameSyncObject) {
@@ -797,6 +799,7 @@ public class CameraToMpegTest {
                 mFrameAvailable = false;
             }
 
+            Log.e(TAG_SEQUENCE, "awaitNewImage end, thread=" + Thread.currentThread().getName());
             // Latch the data.
             mTextureRender.checkGlError("before updateTexImage");
             mSurfaceTexture.updateTexImage();
@@ -811,7 +814,9 @@ public class CameraToMpegTest {
 
         @Override
         public void onFrameAvailable(SurfaceTexture st) {
-            if (VERBOSE) Log.d(TAG, "new frame available");
+            Log.e(TAG_SEQUENCE, "onFrameAvailable, thread=" + Thread.currentThread().getName());
+            if (VERBOSE)
+                Log.d(TAG, "new frame available, thread=" + Thread.currentThread().getName());
             synchronized (mFrameSyncObject) {
                 if (mFrameAvailable) {
                     throw new RuntimeException("mFrameAvailable already set, frame could be dropped");
@@ -885,6 +890,7 @@ public class CameraToMpegTest {
         }
 
         public void drawFrame(SurfaceTexture st) {
+            Log.e(TAG_SEQUENCE, "drawFrame, thread=" + Thread.currentThread().getName());
             checkGlError("onDrawFrame start");
             st.getTransformMatrix(mSTMatrix);
 

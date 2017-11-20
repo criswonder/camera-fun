@@ -135,14 +135,14 @@ public class CameraWrapper {
         Camera.Parameters cameraParams = getInstance().getCameraParameter();
         if (cameraParams != null) {
             int rotation = 180;
-            Log.e(TAG, "original:" + cameraParams.flatten());
+//            Log.e(TAG, "original:" + cameraParams.flatten());
             cameraParams.setRotation(rotation);
             cameraParams.setPreviewSize(1440, 1080);
-            Log.e(TAG, "change:" + cameraParams.flatten());
+//            Log.e(TAG, "change:" + cameraParams.flatten());
             getInstance().updateCameraConfig(cameraParams);
         }
 
-//        getInstance().startPreview();
+        getInstance().startPreview();
     }
 
     public void updateCameraConfig(Camera.Parameters inputParameter) {
