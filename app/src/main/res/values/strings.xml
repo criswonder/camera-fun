@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CameraFun</string>
+    <string name="title_activity_video_dump">VideoDumpActivity</string>
+    <string name="title_activity_muxer">MuxerActivity</string>
 </resources>
