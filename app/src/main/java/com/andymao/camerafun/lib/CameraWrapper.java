@@ -142,6 +142,9 @@ public class CameraWrapper {
 //            Log.e(TAG, "change:" + cameraParams.flatten());
             getInstance().updateCameraConfig(cameraParams);
         }
+        Log.e(TAG,"preview format="
+                +PreviewFormatUtils.getSupportPreviewFormatStrings(cameraParams.getSupportedPreviewFormats())+","
+        +",current="+PreviewFormatUtils.findImageFormatStr(cameraParams.getPreviewFormat()));
 
         getInstance().startPreview();
     }
@@ -191,12 +194,14 @@ public class CameraWrapper {
                 mCamera.setPreviewTexture(surfaceTexture);
                 mCamera.startPreview();
 
-                surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
-                    @Override
-                    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-                        Log.e(TAG, "onFrameAvailable");
-                    }
-                });
+                if (surfaceTexture != null) {
+                    surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
+                        @Override
+                        public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                            Log.e(TAG, "onFrameAvailable");
+                        }
+                    });
+                }
 
 //                mCamera.setPreviewCallback(new Camera.PreviewCallback() {
 //                    @Override

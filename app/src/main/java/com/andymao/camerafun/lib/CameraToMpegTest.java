@@ -33,14 +33,18 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
+import android.view.TextureView;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 //20131106: removed unnecessary glFinish(), removed hard-coded "/sdcard"
 //20131205: added alpha to EGLConfig
@@ -66,6 +70,8 @@ import java.nio.FloatBuffer;
  * currently part of CTS.)
  */
 public class CameraToMpegTest {
+    public TextureView textureView = null;
+
     private static final String TAG = "CameraToMpegTest";
     private static final String TAG_SEQUENCE = "andymao@";
     private static final boolean VERBOSE = true;           // lots of logging
@@ -102,6 +108,8 @@ public class CameraToMpegTest {
 
     // allocate one of these up front so we don't need to do it every time
     private MediaCodec.BufferInfo mBufferInfo;
+    Handler mainHandler = new Handler(Looper.getMainLooper());
+    AtomicBoolean updatePreviewTexture = new AtomicBoolean(false);
 
     /**
      * test entry point
@@ -139,7 +147,7 @@ public class CameraToMpegTest {
          */
         public static void runTest(CameraToMpegTest obj) throws Throwable {
             CameraToMpegWrapper wrapper = new CameraToMpegWrapper(obj);
-            Thread th = new Thread(wrapper, "codec test");
+            Thread th = new Thread(wrapper, "thread-codec-test");
             th.start();
             th.join();
             if (wrapper.mThrowable != null) {
@@ -196,6 +204,14 @@ public class CameraToMpegTest {
                 // argument.
                 mStManager.awaitNewImage();
                 mStManager.drawImage();
+//                if (updatePreviewTexture.compareAndSet(false, true)) {
+//                    mainHandler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            textureView.setSurfaceTexture(mStManager.getSurfaceTexture());
+//                        }
+//                    });
+//                }
 
                 // Set the presentation time stamp from the SurfaceTexture's time stamp.  This
                 // will be used by MediaMuxer to set the PTS in the video.
@@ -677,6 +693,7 @@ public class CameraToMpegTest {
          * Makes our EGL context and surface current.
          */
         public void makeCurrent() {
+            //https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglMakeCurrent.xhtml
             EGL14.eglMakeCurrent(mEGLDisplay, mEGLSurface, mEGLSurface, mEGLContext);
             checkEglError("eglMakeCurrent");
         }
@@ -685,6 +702,23 @@ public class CameraToMpegTest {
          * Calls eglSwapBuffers.  Use this to "publish" the current frame.
          */
         public boolean swapBuffers() {
+            /**
+             * https://www.khronos.org/registry/EGL/sdk/docs/man/html/eglSwapBuffers.xhtml
+             * Description
+             If surface is a window surface, eglSwapBuffers posts its color buffer to the associated native window.
+
+             The contents of ancillary buffers are always undefined after calling eglSwapBuffers.
+             The contents of the color buffer are left unchanged if the value of the EGL_SWAP_BEHAVIOR
+             attribute of surface is EGL_BUFFER_PRESERVED, and are undefined if the value is EGL_BUFFER_DESTROYED.
+             The value of EGL_SWAP_BEHAVIOR can be set for some surfaces using eglSurfaceAttrib.
+
+             eglSwapBuffers performs an implicit flush operation on the context (glFlush for an OpenGL ES or
+             OpenGL context, vgFlush for an OpenVG context) bound to surface before swapping. Subsequent client
+             API commands may be issued on that context immediately after calling eglSwapBuffers, but are not
+             executed until the buffer exchange is completed.
+
+             If surface is a pixel buffer or a pixmap, eglSwapBuffers has no effect, and no error is generated.
+             */
             boolean result = EGL14.eglSwapBuffers(mEGLDisplay, mEGLSurface);
             checkEglError("eglSwapBuffers");
             return result;
@@ -718,6 +752,7 @@ public class CameraToMpegTest {
      */
     private static class SurfaceTextureManager
             implements SurfaceTexture.OnFrameAvailableListener {
+        //这个SurfaceTexture会被设置到Camera的previewTexture
         private SurfaceTexture mSurfaceTexture;
         private CameraToMpegTest.STextureRender mTextureRender;
 
@@ -893,6 +928,7 @@ public class CameraToMpegTest {
             Log.e(TAG_SEQUENCE, "drawFrame, thread=" + Thread.currentThread().getName());
             checkGlError("onDrawFrame start");
             st.getTransformMatrix(mSTMatrix);
+            Log.w(TAG, "mSTMatrix=" + PreviewFormatUtils.printFloatArray(mSTMatrix));
 
             // (optional) clear to green so we can see if we're failing to set pixels
             GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
