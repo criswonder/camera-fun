@@ -16,37 +16,49 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-        <activity android:name=".Mp4TestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".Mp4TestActivity">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".videodump.VideoDumpActivity"
             android:label="@string/title_activity_video_dump"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".muxer.MuxerActivity"
             android:label="@string/title_activity_muxer"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
 
         </activity>
+        <activity
+            android:name=".google.OpenGLES20Activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".OpenGLActivity"
+            android:label="@string/title_activity_open_gl"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

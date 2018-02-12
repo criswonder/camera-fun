@@ -9,7 +9,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
+import com.andymao.camerafun.executor.AVThread;
+import com.andymao.camerafun.google.OpenGLES20Activity;
 import com.andymao.camerafun.lib.CameraToMpegTest;
 import com.andymao.camerafun.lib.CameraWrapper;
 import com.andymao.camerafun.lib.EncodeAndMuxTest;
@@ -71,6 +74,28 @@ public class MainActivity extends AppCompatActivity {
                 });
 
                 newThread.start();
+            }
+        });
+        findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AVThread.getInstance().getHandler().sendEmptyMessage(1);
+            }
+        });
+
+
+        findViewById(R.id.btn_opengl).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, OpenGLActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.opengl_es20).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, OpenGLES20Activity.class);
+                startActivity(intent);
             }
         });
     }
