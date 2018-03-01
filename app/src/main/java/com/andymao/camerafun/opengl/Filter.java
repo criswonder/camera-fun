@@ -156,34 +156,6 @@ public class Filter {
             t4.first, t4.second
     };
 
-    static final float original_cw_90[] = {
-            v3.first, v3.second,
-            v1.first, v1.second,
-            v4.first, v4.second,
-            v2.first, v2.second
-    };
-
-    static final float original_texture_cw_90[] = {
-            t1.first, t1.second,
-            t2.first, t2.second,
-            t3.first, t3.second,
-            t4.first, t4.second
-    };
-
-    static final float original_ccw_90[] = {
-            v2.first, v2.second,
-            v4.first, v4.second,
-            v1.first, v1.second,
-            v3.first, v3.second
-    };
-
-    static final float original_texture_ccw_90[] = {
-            t1.first, t1.second,
-            t2.first, t2.second,
-            t3.first, t3.second,
-            t4.first, t4.second
-    };
-
     private String mVertexShader;
     private String mFragmentShader;
 
@@ -212,8 +184,12 @@ public class Filter {
     }
 
     public void loadVertex() {
-        float[] coord = original_ccw_90;
-        float[] texture_coord = original_texture_ccw_90;
+        float[] coord = original;
+        float[] texture_coord = original_texture;
+//        float[] coord = original_ccw_90_horizatal_flip;
+//        float[] texture_coord = original_texture_ccw_90_horizatal_flip;
+//        float[] coord = original_ccw_90;
+//        float[] texture_coord = original_texture_ccw_90;
 
         mCubeBuffer = ByteBuffer.allocateDirect(coord.length * 4)
                 .order(ByteOrder.nativeOrder())

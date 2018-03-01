@@ -2,6 +2,7 @@ package com.andymao.camerafun;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -42,9 +43,10 @@ public class OpenGLActivity extends AppCompatActivity {
         ViewGroup container = (ViewGroup) findViewById(R.id.main);
         mSurfaceView = new GLSurfaceView(this);
         mSurfaceView.setEGLContextClientVersion(2);
+//        mSurfaceView.setBackgroundColor(Color.parseColor("#ffffff"));
         container.addView(mSurfaceView);
 
-        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_web);
+        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.crop2);
         final Filter filter = new Filter();
         mSurfaceView.setRenderer(new GLSurfaceView.Renderer() {
             @Override
@@ -55,7 +57,9 @@ public class OpenGLActivity extends AppCompatActivity {
 
             @Override
             public void onSurfaceChanged(GL10 gl, int width, int height) {
-                GLES20.glViewport(0, 0, width, height);
+//                GLES20.glViewport(0, 0, width, height);
+                GLES20.glViewport(0, 0, 1000, 720);
+//                GLES20.glViewport(0, 0, 1080, 1080);
             }
 
             @Override
