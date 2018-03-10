@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.andymao.camerafun.opengl.Filter4;
+import com.andymao.camerafun.opengl.FilterNV21;
 import com.andymao.camerafun.opengl.GLHelper;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -52,7 +53,8 @@ public class OpenGLActivity extends AppCompatActivity {
         final Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.crop);
 //        final Bitmap bitmap2 = BitmapFactory.decodeFile("/sdcard/idlefish_video/sticker.png");
 //        final Filter3 filter = new Filter3();
-        final Filter4 filter = new Filter4();
+        final FilterNV21 filter = new FilterNV21();
+//        final Filter4 filter = new Filter4();
         mSurfaceView.setRenderer(new GLSurfaceView.Renderer() {
             @Override
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -67,7 +69,7 @@ public class OpenGLActivity extends AppCompatActivity {
             @Override
             public void onSurfaceChanged(GL10 gl, int width, int height) {
 //                GLES20.glViewport(0, 0, width, height);
-                GLES20.glViewport(0, 0, 1080, 1920);
+                GLES20.glViewport(0, 0, 1080, 1080);
 //                GLES20.glViewport(0, 0, 1080, 1080);
             }
 
