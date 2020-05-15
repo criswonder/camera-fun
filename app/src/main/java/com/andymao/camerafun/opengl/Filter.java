@@ -31,7 +31,8 @@ public class Filter {
             " \n" +
             "void main()\n" +
             "{\n" +
-            "     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);\n" +
+            "     gl_FragColor = vec4(0.2,0.9,0.1,1.0);\n" +
+//            "     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);\n" +
             "}";
 
     static final float COORD1[] = {

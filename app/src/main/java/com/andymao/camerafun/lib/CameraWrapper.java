@@ -191,7 +191,7 @@ public class CameraWrapper {
                     Log.e(TAG, "openCamera failed surfaceTexture == null");
                 }
                 mCamera.setDisplayOrientation(90);
-                mCamera.setPreviewTexture(surfaceTexture);
+//                mCamera.setPreviewTexture(surfaceTexture);
                 mCamera.startPreview();
 
                 if (surfaceTexture != null) {
@@ -203,12 +203,12 @@ public class CameraWrapper {
                     });
                 }
 
-//                mCamera.setPreviewCallback(new Camera.PreviewCallback() {
-//                    @Override
-//                    public void onPreviewFrame(byte[] data, Camera camera) {
-//                        Log.e(TAG,"onPreviewFrame");
-//                    }
-//                });
+                mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+                    @Override
+                    public void onPreviewFrame(byte[] data, Camera camera) {
+                        Log.e(TAG,"onPreviewFrame");
+                    }
+                });
 
 
 //                mCamera.setPreviewCallbackWithBuffer(new Camera.PreviewCallback() {
@@ -226,7 +226,7 @@ public class CameraWrapper {
 //
 //                    }
 //                });
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

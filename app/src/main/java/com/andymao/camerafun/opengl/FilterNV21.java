@@ -2,6 +2,7 @@ package com.andymao.camerafun.opengl;
 
 
 import android.opengl.GLES20;
+import android.util.Log;
 import android.util.Pair;
 
 import java.io.File;
@@ -12,10 +13,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-/**
- * Created by huangwei on 2015/6/8.
- */
 public class FilterNV21 {
+    private final String TAG = "FilterNV21";
+    private boolean VERBOSE = true;
 
     protected static final String VERTEX_SHADER = "" +
             "attribute vec4 position;\n" +
@@ -145,55 +145,69 @@ public class FilterNV21 {
     }
 
     public void loadYUV() {
+
         int width = 1920;
         int height = 1080;
 
         ByteBuffer[] dataBuffers = readYUVBuffer();
-
+        long start = System.nanoTime();
         texIds = new int[3];
 
+        dataBuffers[0].position(0);
+        dataBuffers[0].limit(width * height);
         GLES20.glGenTextures(3, texIds, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texIds[0]);
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_LUMINANCE, width, height, 0,
                 GLES20.GL_LUMINANCE, GLES20.GL_UNSIGNED_BYTE, dataBuffers[0]);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+//        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+//        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        Log.e(TAG, "loadYUV use time.1=" + (System.nanoTime() - start)/1000);
 
+        start = System.nanoTime();
+        int capacity = width * height / 2;
+        dataBuffers[0].position(width * height - 10000);
+        dataBuffers[0].limit(width * height + capacity);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texIds[1]);
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_LUMINANCE_ALPHA, width / 2, height / 2, 0,
-                GLES20.GL_LUMINANCE_ALPHA, GLES20.GL_UNSIGNED_BYTE, dataBuffers[1]);
+                GLES20.GL_LUMINANCE_ALPHA, GLES20.GL_UNSIGNED_BYTE, dataBuffers[0]);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-
+//        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+//        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        Log.e(TAG, "loadYUV use time=" + (System.nanoTime() - start)/1000);
     }
 
     private ByteBuffer[] readYUVBuffer() {
         int width = 1920, height = 1080;
-        File file = new File("/sdcard/yuv.data");
-//        File file = new File("/sdcard/yuv_yv21_2.data");
+//        File file = new File("/sdcard/yuv.data");
+        File file = new File("/sdcard/yuv_yv21.data");
 //        File file = new File("/sdcard/yuv_yv21_3.data");
         try {
             FileInputStream inputStream = new FileInputStream(file);
             byte[] data = new byte[3110400];
             inputStream.read(data);
 
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(width * height)
+            int capacity = width * height / 2;
+
+            long start = System.currentTimeMillis();
+
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(width * height + capacity)
                     .order(ByteOrder.nativeOrder());
             byteBuffer.clear();
-            byteBuffer.put(data, 0, width * height);
+            byteBuffer.put(data, 0, width * height + capacity);
             byteBuffer.position(0);
 
-            int capacity = width * height / 2;
-            ByteBuffer byteBuffer1 = ByteBuffer.allocateDirect(capacity)
-                    .order(ByteOrder.nativeOrder());
-            byteBuffer1.clear();
-            byteBuffer1.put(data, width * height, capacity);
-            byteBuffer1.position(0);
-            byteBuffer1.limit(22);
+            Log.e(TAG,"readYUVBuffer use time="+(System.currentTimeMillis()-start));
+
+//            int capacity = width * height / 2;
+//            ByteBuffer bysteBuffer1 = ByteBuffer.allocateDirect(capacity)
+//                    .order(ByteOrder.nativeOrder());
+//            byteBuffer1.clear();
+//            byteBuffer1.put(data, width * height, capacity);
+//            byteBuffer1.position(0);
+//            byteBuffer1.limit(22);
 
 //            ByteBuffer byteBuffer2 = ByteBuffer.allocateDirect(capacity)
 //                    .order(ByteOrder.nativeOrder());
@@ -203,7 +217,7 @@ public class FilterNV21 {
 
             ByteBuffer[] datas = new ByteBuffer[3];
             datas[0] = byteBuffer;
-            datas[1] = byteBuffer1;
+//            datas[1] = byteBuffer1;
 //            datas[2] = byteBuffer2;
 
             inputStream.close();
